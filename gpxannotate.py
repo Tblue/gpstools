@@ -9,8 +9,9 @@
 #  1: Missing command line parameters.
 #  2: Could not open input file.
 #  3: Parse error in input file.
-#  4: Input file is not a GPX file that we can handle.
-#  5: Could not write changes back.
+#  4: Input file is not a valid GPX file (or has wrong GPX version).
+#  5: GPX file does not contain any tracks and/or points.
+#  6: Could not write changes back.
 
 ### IMPORTS ###
 import sys
@@ -61,12 +62,23 @@ except ElementTree.ParseError as e:
             % (sys.argv[1], e)
     sys.exit( 3 )
 
-# Great, file parsed! Find all <trk> elements:
+# Great, file parsed! Determine the GPX version:
+gpxVer = gpxTree.getroot().get( 'version' )
+if not gpxVer or not gpxTree.getroot().tag.endswith( '}gpx' ):
+    print >> sys.stderr, "E: File `%s' does not appear to be a valid GPX file!" \
+            % sys.argv[1]
+    sys.exit( 4 )
+elif gpxVer != '1.0':
+    print >> sys.stderr, "E: File `%s' has unsupported GPX version %s (need: 1.0)." \
+            % (sys.argv[1], gpxVer)
+    sys.exit( 4 )
+
+# Find all <trk> elements:
 tracks = gpxTree.findall( gpxNamespace + 'trk' )
 if len( tracks ) == 0:
     print >> sys.stderr, "E: No <trk> elements found in file `%s'!" \
-            % sys.argv[0], "Is this a valid GPX 1.0 file?"
-    sys.exit( 4 )
+            % sys.argv[1]
+    sys.exit( 5 )
 
 # Now, try to process each <trk> element:
 for i in range( len( tracks ) ):
@@ -138,7 +150,7 @@ try:
 except IOError as e:
     print >> sys.stderr, "E: Could not create/write to temporary file `%s': %s" \
             % (e.filename, e.strerror)
-    sys.exit( 5 )
+    sys.exit( 6 )
 
 # ...fsync...
 tmpFile.flush()
@@ -150,4 +162,4 @@ try:
 except IOError as e:
     print >> sys.stderr, "E: Could not copy file `%s' to `%s': %s" \
             % (tmpFile.name, sys.argv[1], e.strerror)
-    sys.exit( 5 )
+    sys.exit( 6 )
