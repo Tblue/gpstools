@@ -152,6 +152,10 @@ except IOError as e:
             % (e.filename, e.strerror)
     sys.exit( 6 )
 
+# ...fsync...
+tmpFile.flush()
+os.fsync( tmpFile.fileno() )
+
 # ...then copy the tempfile to the source file.
 try:
     shutil.copyfile( tmpFile.name, sys.argv[1] )
