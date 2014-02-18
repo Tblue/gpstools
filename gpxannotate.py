@@ -16,7 +16,6 @@
 ### IMPORTS ###
 import sys
 import os
-import shutil
 import tempfile
 from xml.etree import ElementTree
 from gps import EarthDistance
@@ -144,22 +143,37 @@ else:
 gpxTree.getroot().set( 'creator', gpxCreator )
 
 # First, write to a temporary file...
+tmpFile = None
+
 try:
-    tmpFile = tempfile.NamedTemporaryFile()
+    tmpFile = tempfile.NamedTemporaryFile(
+            dir=os.path.dirname( sys.argv[1] ),
+            prefix=os.path.basename( sys.argv[1] ) + '.',
+            suffix='.new',
+            delete=False
+        )
     gpxTree.write( tmpFile, 'utf-8', True )
-except IOError as e:
+except EnvironmentError as e:
     print >> sys.stderr, "E: Could not create/write to temporary file `%s': %s" \
             % (e.filename, e.strerror)
+
+    if tmpFile is not None:
+        tmpFile.close()
+        os.unlink( tmpFile.name )
+
     sys.exit( 6 )
 
 # ...fsync...
 tmpFile.flush()
 os.fsync( tmpFile.fileno() )
+tmpFile.close()
 
-# ...then copy the tempfile to the source file.
+# ...then move the tempfile to the source file.
 try:
-    shutil.copyfile( tmpFile.name, sys.argv[1] )
-except IOError as e:
-    print >> sys.stderr, "E: Could not copy file `%s' to `%s': %s" \
+    os.rename( tmpFile.name, sys.argv[1] )
+except OSError as e:
+    print >> sys.stderr, "E: Could not move file `%s' to `%s': %s" \
             % (tmpFile.name, sys.argv[1], e.strerror)
+
+    os.unlink( tmpFile.name )
     sys.exit( 6 )
