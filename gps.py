@@ -1,6 +1,10 @@
 # Miscellaneous geodesy and time functions.
 #
 # This file is Copyright (c) 2010 by the GPSD project.
+#
+# (The following license block was copied verbatim from the LICENSE
+# file in the GPSD distribution.)
+#
 # Compilation copyright is held by the GPSD project.  All rights reserved.
 # 
 # GPSD project copyrights are assigned to the project lead, currently
