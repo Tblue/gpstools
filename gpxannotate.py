@@ -14,7 +14,7 @@
 #  5: GPX file does not contain any tracks and/or points.
 #  6: Could not write changes back.
 #
-# Copyright (c) 2014, Tilman Blumenbach <tilman AT ax86 DOT net>
+# Copyright (c) 2012-2014, Tilman Blumenbach <tilman AT ax86 DOT net>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
