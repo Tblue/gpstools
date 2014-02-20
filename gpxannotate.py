@@ -1,8 +1,9 @@
 #!/usr/bin/env python2
-# Annotate a GPX 1.0 file.
 #
-# For each track, sets its description to the track's distance and
-# optionally, renames the track.
+# Annotates a GPX 1.0 file.
+#
+# For each track, sets its description to the track's length in
+# (kilo-)meters and optionally, renames the track.
 #
 # Exit codes:
 #  0: Everything went fine.
