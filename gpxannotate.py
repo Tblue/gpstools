@@ -38,11 +38,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### IMPORTS ###
-import sys
 import os
+import sys
 import tempfile
-from xml.etree import ElementTree
+
 from gps import EarthDistance
+from xml.etree import ElementTree
 
 
 ### GLOBAL VARIABLES ###
@@ -114,6 +115,16 @@ for i in range( len( tracks ) ):
         print >> sys.stderr, 'W: Track', currname, 'has no segments and/or points! Skipping.'
         continue
 
+    print 'Track %s:' % currname
+
+    # Make sure there is a description element for this track.
+    descElm = track.find( gpxNamespace + 'desc' )
+    if descElm is None:
+        descElm = ElementTree.SubElement( track, gpxNamespace + 'desc' )
+        descElm.text = ''
+    else:
+        descElm.text += '\n'
+
     # Calculate the distance of this track.
     distance = 0
     for j in range( 1, len( points ) ):
@@ -136,15 +147,8 @@ for i in range( len( tracks ) ):
 
         distance += EarthDistance( pointA, pointB )
 
-    # Now, make the distance this track's description:
-    descElm = track.find( gpxNamespace + 'desc' )
-    if descElm is None:
-        descElm = ElementTree.SubElement( track, gpxNamespace + 'desc' )
-
-    descElm.text = 'Distance: ' + formatDistance( distance )
-    
-    print 'Track %s:' % currname
-    print '  Has distance %s.' % formatDistance( distance )
+    descElm.text += 'Distance: ' + formatDistance( distance )
+    print '  Distance: %s' % formatDistance( distance )
 
     if i + 2 < len( sys.argv ):
         # Rename track.
