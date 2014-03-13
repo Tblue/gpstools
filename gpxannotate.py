@@ -38,6 +38,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### IMPORTS ###
+import dateutil.parser
 import os
 import sys
 import tempfile
@@ -149,6 +150,24 @@ for i in range( len( tracks ) ):
 
     descElm.text += 'Distance: ' + formatDistance( distance )
     print '  Distance: %s' % formatDistance( distance )
+
+    # If possible, calculate the track's duration.
+    if len(points) > 1:
+        startTimeElm = points[0].find(gpxNamespace + 'time')
+        endTimeElm = points[-1].find(gpxNamespace + 'time')
+
+        if startTimeElm is not None and endTimeElm is not None:
+            startTime = dateutil.parser.parse(startTimeElm.text)
+            endTime = dateutil.parser.parse(endTimeElm.text)
+            duration = endTime - startTime
+
+            durStr = 'Duration: %s (%s to %s)' % (
+                    duration,
+                    startTime.strftime('%Y-%m-%d %H:%M %Z'),
+                    endTime.strftime('%Y-%m-%d %H:%M %Z')
+                )
+            descElm.text += '\n' + durStr
+            print '  ' + durStr
 
     if i + 2 < len( sys.argv ):
         # Rename track.
