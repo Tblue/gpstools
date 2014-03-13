@@ -117,6 +117,7 @@ for i in range( len( tracks ) ):
         continue
 
     print 'Track %s:' % currname
+    print '--------------'
 
     # Make sure there is a description element for this track.
     descElm = track.find( gpxNamespace + 'desc' )
@@ -148,8 +149,8 @@ for i in range( len( tracks ) ):
 
         distance += EarthDistance( pointA, pointB )
 
-    descElm.text += 'Distance: ' + formatDistance( distance )
-    print '  Distance: %s' % formatDistance( distance )
+    descElm.text += 'Distance:\t' + formatDistance( distance )
+    print 'Distance:\t%s' % formatDistance( distance )
 
     # If possible, calculate the track's duration.
     if len(points) > 1:
@@ -161,23 +162,25 @@ for i in range( len( tracks ) ):
             endTime = dateutil.parser.parse(endTimeElm.text)
             duration = endTime - startTime
 
-            durStr = 'Duration: %s (%s to %s)' % (
+            durStr = 'Duration:\t%s\nStart time:\t%s\nEnd time:\t%s' % (
                     duration,
                     startTime.strftime('%Y-%m-%d %H:%M %Z'),
                     endTime.strftime('%Y-%m-%d %H:%M %Z')
                 )
             descElm.text += '\n' + durStr
-            print '  ' + durStr
+            print durStr
 
     if i + 2 < len( sys.argv ):
         # Rename track.
-        print "  Renaming to `%s'." % sys.argv[i + 2]
+        print "Renaming to `%s'." % sys.argv[i + 2]
 
         nameElm = track.find( gpxNamespace + 'name' )
         if nameElm is None:
             nameElm = ElementTree.SubElement( track, gpxNamespace + 'name' )
 
         nameElm.text = sys.argv[i + 2]
+
+    print
 
 # Add some credit. :)
 myName     = os.path.basename( sys.argv[0] )
