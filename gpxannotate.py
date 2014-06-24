@@ -178,12 +178,12 @@ for i in range( len( tracks ) ):
         if nameElm is None:
             nameElm = ElementTree.SubElement( track, gpxNamespace + 'name' )
 
-        nameElm.text = sys.argv[i + 2]
+        nameElm.text = sys.argv[i + 2].decode( 'utf-8' )
 
     print
 
 # Add some credit. :)
-myName     = os.path.basename( sys.argv[0] )
+myName = os.path.basename( sys.argv[0] ).decode( 'utf-8' )
 gpxCreator = gpxTree.getroot().get( 'creator' )
 if not gpxCreator:
     gpxCreator = myName
