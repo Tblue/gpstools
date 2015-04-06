@@ -14,7 +14,7 @@
 #  5: GPX file does not contain any tracks and/or points.
 #  6: Could not write changes back.
 #
-# Copyright (c) 2012-2014, Tilman Blumenbach <tilman AT ax86 DOT net>
+# Copyright (c) 2012-2015, Tilman Blumenbach <tilman AT ax86 DOT net>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,12 +47,6 @@ from gps import EarthDistance
 from xml.etree import ElementTree
 
 
-### GLOBAL VARIABLES ###
-# We only handle GPX 1.0 files for now.
-gpxNamespaceURI = 'http://www.topografix.com/GPX/1/0'
-gpxNamespace    = '{' + gpxNamespaceURI + '}'
-
-
 ### HELPER FUNCTIONS ###
 def formatDistance( dist ):
     if dist >= 1000:
@@ -69,11 +63,6 @@ if len( sys.argv ) < 2:
     print >> sys.stderr, 'Usage:'
     print >> sys.stderr, ' %s gpx-file [new-track-name...]' % sys.argv[0]
     sys.exit( 1 )
-
-# Setup namespace handling.
-# This seems to make the GPX namespace the default, which is exactly
-# what we want.
-ElementTree.register_namespace( '', gpxNamespaceURI )
 
 # Try to load and parse the GPX file:
 try:
@@ -93,10 +82,19 @@ if not gpxVer or not gpxTree.getroot().tag.endswith( '}gpx' ):
     print >> sys.stderr, "E: File `%s' does not appear to be a valid GPX file!" \
             % sys.argv[1]
     sys.exit( 4 )
-elif gpxVer != '1.0':
-    print >> sys.stderr, "E: File `%s' has unsupported GPX version %s (need: 1.0)." \
+elif gpxVer not in ["1.0", "1.1"]:
+    print >> sys.stderr, "E: File `%s' has unsupported GPX version %s (need 1.0 or 1.1)." \
             % (sys.argv[1], gpxVer)
     sys.exit( 4 )
+
+# Fix the namespace URI to reflect the GPX version we found.
+gpxNamespaceURI = 'http://www.topografix.com/GPX/' + gpxVer.replace(".", "/")
+gpxNamespace    = '{' + gpxNamespaceURI + '}'
+
+# Setup namespace handling.
+# This seems to make the GPX namespace the default, which is exactly
+# what we want.
+ElementTree.register_namespace( '', gpxNamespaceURI )
 
 # Find all <trk> elements:
 tracks = gpxTree.findall( gpxNamespace + 'trk' )
