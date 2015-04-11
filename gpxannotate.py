@@ -95,6 +95,8 @@ gpxNamespace    = '{' + gpxNamespaceURI + '}'
 # This seems to make the GPX namespace the default, which is exactly
 # what we want.
 ElementTree.register_namespace( '', gpxNamespaceURI )
+# Garmin extensions:
+ElementTree.register_namespace( 'gpxx', 'http://www.garmin.com/xmlschemas/GpxExtensions/v3' )
 
 # Find all <trk> elements:
 tracks = gpxTree.findall( gpxNamespace + 'trk' )
