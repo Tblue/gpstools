@@ -14,7 +14,7 @@
 #  5: GPX file does not contain any tracks and/or points.
 #  6: Could not write changes back.
 #
-# Copyright (c) 2012-2015, Tilman Blumenbach <tilman AT ax86 DOT net>
+# Copyright (c) 2012-2016, Tilman Blumenbach <tilman AT ax86 DOT net>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import sys
 import tempfile
 
 from gps import EarthDistance
-from xml.etree import ElementTree
+from lxml import etree
 
 
 ### HELPER FUNCTIONS ###
@@ -66,12 +66,12 @@ if len( sys.argv ) < 2:
 
 # Try to load and parse the GPX file:
 try:
-    gpxTree = ElementTree.ElementTree( None, sys.argv[1] )
+    gpxTree = etree.parse( sys.argv[1] )
 except IOError as e:
     print >> sys.stderr, "E: Could not open file `%s': %s" \
             % (e.filename, e.strerror)
     sys.exit( 2 )
-except ElementTree.ParseError as e:
+except etree.ParseError as e:
     print >> sys.stderr, "E: Could not parse file `%s': %s" \
             % (sys.argv[1], e)
     sys.exit( 3 )
@@ -88,15 +88,9 @@ elif gpxVer not in ["1.0", "1.1"]:
     sys.exit( 4 )
 
 # Fix the namespace URI to reflect the GPX version we found.
+# TODO: Can this be done in a better way?
 gpxNamespaceURI = 'http://www.topografix.com/GPX/' + gpxVer.replace(".", "/")
 gpxNamespace    = '{' + gpxNamespaceURI + '}'
-
-# Setup namespace handling.
-# This seems to make the GPX namespace the default, which is exactly
-# what we want.
-ElementTree.register_namespace( '', gpxNamespaceURI )
-# Garmin extensions:
-ElementTree.register_namespace( 'gpxx', 'http://www.garmin.com/xmlschemas/GpxExtensions/v3' )
 
 # Find all <trk> elements:
 tracks = gpxTree.findall( gpxNamespace + 'trk' )
@@ -122,7 +116,7 @@ for i in range( len( tracks ) ):
     # Make sure there is a description element for this track.
     descElm = track.find( gpxNamespace + 'desc' )
     if descElm is None:
-        descElm = ElementTree.SubElement( track, gpxNamespace + 'desc' )
+        descElm = etree.SubElement( track, gpxNamespace + 'desc' )
         descElm.text = ''
     else:
         descElm.text += '\n'
@@ -176,7 +170,7 @@ for i in range( len( tracks ) ):
 
         nameElm = track.find( gpxNamespace + 'name' )
         if nameElm is None:
-            nameElm = ElementTree.SubElement( track, gpxNamespace + 'name' )
+            nameElm = etree.SubElement( track, gpxNamespace + 'name' )
 
         nameElm.text = sys.argv[i + 2].decode( 'utf-8' )
 
@@ -202,7 +196,7 @@ try:
             suffix='.new',
             delete=False
         )
-    gpxTree.write( tmpFile, 'utf-8', True )
+    gpxTree.write( tmpFile, pretty_print=True )
 except EnvironmentError as e:
     print >> sys.stderr, "E: Could not create/write to temporary file `%s': %s" \
             % (e.filename, e.strerror)
