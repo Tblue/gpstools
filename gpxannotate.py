@@ -42,9 +42,13 @@ import sys
 import tempfile
 
 import dateutil.parser
+import dateutil.tz
 from lxml import etree
 
 from gps import EarthDistance
+
+
+_local_tz = dateutil.tz.gettz()
 
 
 def format_distance(dist):
@@ -151,8 +155,8 @@ for i in range(len(tracks)):
 
             durStr = 'Duration:\t%s\nStart time:\t%s\nEnd time:\t%s' % (
                 duration,
-                startTime.strftime('%Y-%m-%d %H:%M %Z'),
-                endTime.strftime('%Y-%m-%d %H:%M %Z')
+                startTime.astimezone(_local_tz).strftime('%Y-%m-%d %H:%M %Z'),
+                endTime.astimezone(_local_tz).strftime('%Y-%m-%d %H:%M %Z')
             )
             descElm.text += '\n' + durStr
             print durStr
