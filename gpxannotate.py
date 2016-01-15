@@ -82,10 +82,8 @@ elif gpxVer not in ["1.0", "1.1"]:
                          % (sys.argv[1], gpxVer)
     sys.exit(4)
 
-# Fix the namespace URI to reflect the GPX version we found.
-# TODO: Can this be done in a better way?
-gpxNamespaceURI = 'http://www.topografix.com/GPX/' + gpxVer.replace(".", "/")
-gpxNamespace = '{' + gpxNamespaceURI + '}'
+# Determine the namespace URI.
+gpxNamespace = "{%s}" % etree.QName(gpxTree.getroot().tag).namespace
 
 # Find all <trk> elements:
 tracks = gpxTree.findall(gpxNamespace + 'trk')
