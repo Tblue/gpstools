@@ -37,6 +37,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import locale
 import os
 import sys
 import tempfile
@@ -125,7 +126,7 @@ for i in range(len(tracks)):
         bKeys = points[j].keys()
 
         if 'lat' not in aKeys or 'lon' not in aKeys or \
-                'lat' not in bKeys or 'lon' not in bKeys:
+                        'lat' not in bKeys or 'lon' not in bKeys:
             print >> sys.stderr, 'E: While processing track %s:' % currname, \
                 "<trkpt> is missing `lon' and/or `lat' attributes."
             sys.exit(4)
@@ -169,12 +170,12 @@ for i in range(len(tracks)):
         if nameElm is None:
             nameElm = etree.SubElement(track, gpxNamespace + 'name')
 
-        nameElm.text = sys.argv[i + 2].decode('utf-8')
+        nameElm.text = sys.argv[i + 2].decode(locale.getpreferredencoding())
 
     print
 
 # Add some credit. :)
-myName = os.path.basename(sys.argv[0]).decode('utf-8')
+myName = os.path.basename(sys.argv[0]).decode(sys.getfilesystemencoding())
 gpxCreator = gpxTree.getroot().get('creator')
 if not gpxCreator:
     gpxCreator = myName
