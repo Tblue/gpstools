@@ -164,7 +164,7 @@ for i in range(len(tracks)):
 
     if i + 2 < len(sys.argv):
         # Rename track.
-        print "Renaming to `%s'." % sys.argv[i + 2]
+        print "  -> Renaming track to: %s" % sys.argv[i + 2]
 
         nameElm = track.find(gpxNamespace + 'name')
         if nameElm is None:
