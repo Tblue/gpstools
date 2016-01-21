@@ -108,7 +108,7 @@ for i in range(len(tracks)):
         print >> sys.stderr, 'W: Track', currname, 'has no segments and/or points! Skipping.'
         continue
 
-    print 'Track %s:' % currname
+    print "Track `%s':" % currname
     print '--------------'
 
     # Make sure there is a description element for this track.
