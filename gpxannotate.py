@@ -69,7 +69,7 @@ try:
     gpxTree = etree.parse(sys.argv[1])
 except IOError as e:
     print >> sys.stderr, "E: Could not open file `%s': %s" \
-                         % (e.filename, e.strerror)
+                         % (sys.argv[1], e)
     sys.exit(2)
 except etree.ParseError as e:
     print >> sys.stderr, "E: Could not parse file `%s': %s" \
@@ -196,7 +196,7 @@ try:
     )
     gpxTree.write(tmpFile, pretty_print=True)
 except EnvironmentError as e:
-    print >> sys.stderr, "E: Could not create/write to temporary file `%s': %s" \
+    print >> sys.stderr, "E: Could not create (or write to) temporary file `%s': %s" \
                          % (e.filename, e.strerror)
 
     if tmpFile is not None:
